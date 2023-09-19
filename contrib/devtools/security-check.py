@@ -101,9 +101,8 @@ def check_ELF_separate_code(binary):
     # Spot-check ELF LOAD program header flags per section
     # If these sections exist, check them against the expected R/W/E flags
     for (section, flags) in flags_per_section.items():
-        if section in EXPECTED_FLAGS:
-            if int(EXPECTED_FLAGS[section]) != int(flags):
-                return False
+        if section in EXPECTED_FLAGS: and int(EXPECTED_FLAGS[section]) != int(flags):
+            return False
     return True
 
 def check_ELF_control_flow(binary) -> bool:
@@ -112,10 +111,7 @@ def check_ELF_control_flow(binary) -> bool:
     '''
     main = binary.get_function_address('main')
     content = binary.get_content_from_virtual_address(main, 4, lief.Binary.VA_TYPES.AUTO)
-
-    if content.tolist() == [243, 15, 30, 250]: # endbr64
-        return True
-    return False
+    return content.tolist() == [243, 15, 30, 250]
 
 def check_PE_DYNAMIC_BASE(binary) -> bool:
     '''PIE: DllCharacteristics bit 0x40 signifies dynamicbase (ASLR)'''
@@ -136,15 +132,10 @@ def check_PE_control_flow(binary) -> bool:
     Check for control flow instrumentation
     '''
     main = binary.get_symbol('main').value
-
     section_addr = binary.section_from_rva(main).virtual_address
     virtual_address = binary.optional_header.imagebase + section_addr + main
-
     content = binary.get_content_from_virtual_address(virtual_address, 4, lief.Binary.VA_TYPES.VA)
-
-    if content.tolist() == [243, 15, 30, 250]: # endbr64
-        return True
-    return False
+    return content.tolist() == [243, 15, 30, 250]
 
 def check_PE_Canary(binary) -> bool:
     '''
@@ -188,10 +179,7 @@ def check_MACHO_control_flow(binary) -> bool:
     Check for control flow instrumentation
     '''
     content = binary.get_content_from_virtual_address(binary.entrypoint, 4, lief.Binary.VA_TYPES.AUTO)
-
-    if content.tolist() == [243, 15, 30, 250]: # endbr64
-        return True
-    return False
+    return content.tolist() == [243, 15, 30, 250]
 
 BASE_ELF = [
     ('PIE', check_PIE),

@@ -236,9 +236,7 @@ def check_MACHO_min_os(binary) -> bool:
     return False
 
 def check_MACHO_sdk(binary) -> bool:
-    if binary.build_version.sdk == [11, 0, 0]:
-        return True
-    return False
+    return binary.build_version.sdk == [11, 0, 0]
 
 def check_PE_libraries(binary) -> bool:
     ok: bool = True
@@ -251,9 +249,7 @@ def check_PE_libraries(binary) -> bool:
 def check_PE_subsystem_version(binary) -> bool:
     major: int = binary.optional_header.major_subsystem_version
     minor: int = binary.optional_header.minor_subsystem_version
-    if major == 6 and minor == 1:
-        return True
-    return False
+    return major == 6 and minor == 1
 
 def check_ELF_interpreter(binary) -> bool:
     expected_interpreter = ELF_INTERPRETER_NAMES[binary.header.machine_type][binary.abstract.header.endianness]
